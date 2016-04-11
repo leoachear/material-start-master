@@ -55,7 +55,7 @@
       <h3>Angular Material - Starter App</h3>
     </md-toolbar>
 
-    <md-content flex id="content">
+    <md-content flex id="content" ng-controller="ConexionController as cc">
         <md-icon md-svg-icon="{{ul.selected.avatar}}" class="avatar"></md-icon>
         <h2>{{ul.selected.name}}</h2>
         <p>{{ul.selected.content}}</p>
@@ -64,10 +64,19 @@
           <md-tooltip>Contact {{ ul.selected.name }}</md-tooltip>
           <md-icon md-svg-icon="share"></md-icon>
         </md-button>
+       
+        
+        <div id="postsDiv" ng-repeat="post in posts">
+          {{post.Nombre}}
+          {{post.Precio}}
+        </div>
+      
       </md-content>
 
   </div>
 
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
     <script src="../node_modules/angular/angular.js"></script>
     <script src="../node_modules/angular-animate/angular-animate.js"></script>
     <script src="../node_modules/angular-aria/angular-aria.js"></script>
@@ -96,7 +105,33 @@
                           .primaryPalette('brown')
                           .accentPalette('red');
 
-              });
+              })
+              .controller('ConexionController', ['$scope',function ConexionController($scope) {
+                var myDataRef = new Firebase('https://appreciar.firebaseio.com/');
+                var postsRef = myDataRef.child("Posts");
+                $scope.posts = [];
+
+                postsRef.on('child_added', function(snapshot) {
+                  var objmessage = snapshot.val();
+                  //$('<div/>').attr('id',snapshot.key()).text('Nombre: ' + objmessage.Nombre + ' Precio: ' + objmessage.Precio).appendTo($('#postsDiv'));
+                  console.log(objmessage);
+                  $scope.$apply(function() {
+                    $scope.posts.push(objmessage);  
+                  });
+                  
+                })
+              }]);
+
+/* 
+var myDataRef = new Firebase('https://appreciar.firebaseio.com/Posts');
+$scope.datosBase = [];
+
+myDataRef.on("child_added", function(snapshot) {
+
+$scope.datosBase.push(snapshot.val());
+console.log("carga datos");
+});
+*/              
 
     </script>
 
